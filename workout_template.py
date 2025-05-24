@@ -1,7 +1,7 @@
 import zmq
 import json #Python data like list/dictionaries are sent as strings
 
-#hardocedd workout templates
+#hard coded workout templates
 templates = {
     "push": [
         {"exercise": "Bench Press", "sets": 4, "reps": 8},
@@ -18,7 +18,7 @@ templates = {
 }
 
 context = zmq.Context() #connection environment for ZeroMQ
-socket = context.socket(zmq.REP) #REP (reply) socket (server side
+socket = context.socket(zmq.REP) #REP (reply) socket (server side)
 socket.bind("tcp://*:5555")
 print('Workout Template Generator is running on Port 5555')
 while True:
@@ -29,7 +29,7 @@ while True:
         if len(parts) == 3:
             template_name = " ".join(parts[2:]) #used for multiword templates
             if template_name in templates:
-                response = json.dumps(templates[template_name]) #conver template to a JSON string
+                response = json.dumps(templates[template_name]) #convert template to a JSON string
             else:
                 response = json.dumps({"Error! Template not found, please try again!"})
         else:
