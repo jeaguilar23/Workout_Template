@@ -20,12 +20,14 @@ templates = {
 context = zmq.Context() #connection environment for ZeroMQ
 socket = context.socket(zmq.REP) #REP (reply) socket (server side)
 socket.bind("tcp://*:5555")
+
 print('Workout Template Generator is running on Port 5555')
+
 while True:
     message = socket.recv_string() #waiting for the request
-    key = message.strip().lower() #remove spaces and lowercase string
-    if key.startswith("get template"):
-        parts = key.split()
+    command = message.strip().lower() #remove spaces and lowercase string
+    if command.startswith("get template"):
+        parts = command.split()
         if len(parts) == 3:
             template_name = " ".join(parts[2:]) #used for multiword templates
             if template_name in templates:
