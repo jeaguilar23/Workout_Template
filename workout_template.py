@@ -1,7 +1,7 @@
 import zmq
 import json #Python data like list/dictionaries are sent as strings
 
-#hardocedd workout templates
+#hard coded workout templates
 templates = {
     "push": [
         {"exercise": "Bench Press", "sets": 4, "reps": 8},
@@ -18,22 +18,24 @@ templates = {
 }
 
 context = zmq.Context() #connection environment for ZeroMQ
-socket = context.socket(zmq.REP) #REP (reply) socket (server side
+socket = context.socket(zmq.REP) #REP (reply) socket (server side)
 socket.bind("tcp://*:5555")
+
 print('Workout Template Generator is running on Port 5555')
+
+def error(message):
+    return json.dumps({"error": message})
+
 while True:
     message = socket.recv_string() #waiting for the request
-    key = message.strip().lower() #remove spaces and lowercase string
-    if key.startswith("get template"):
-        parts = key.split()
-        if len(parts) == 3:
-            template_name = " ".join(parts[2:]) #used for multiword templates
-            if template_name in templates:
-                response = json.dumps(templates[template_name]) #conver template to a JSON string
-            else:
-                response = json.dumps({"Error! Template not found, please try again!"})
+    command = message.strip().lower() #remove spaces and lowercase string
+
+    if command.startswith("get template"):
+        templateName = command[len("get template "):].strip()
+        if templateName in templates:
+            response = json.dumps(templates[templateName]) #convert template to a JSON string
         else:
-            response = json.dumps({"Error! Invalid command. Please try again!"})
+            response = error("Template not found")
     else:
-        response = json.dumps({"Error!: Invalid command. Try: get template [template_name]"})
+        response = error("Invalid Command. Make sure it's in the format: get template [templateName]")
     socket.send_string(response) #sends back the template or error message
