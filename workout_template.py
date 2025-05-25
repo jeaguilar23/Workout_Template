@@ -23,6 +23,9 @@ socket.bind("tcp://*:5555")
 
 print('Workout Template Generator is running on Port 5555')
 
+def error(message):
+    return json.dumps({"error": message})
+
 while True:
     message = socket.recv_string() #waiting for the request
     command = message.strip().lower() #remove spaces and lowercase string
@@ -32,7 +35,7 @@ while True:
         if templateName in templates:
             response = json.dumps(templates[templateName]) #convert template to a JSON string
         else:
-            response = json.dumps({"Error! Template not found, please try again!"})
+            response = error("Template not found")
     else:
-        response = json.dumps({"Error!: Invalid command. Try: get template [template_name]"})
+        response = error("Invalid Command. Make sure it's in the format: get template [templateName]")
     socket.send_string(response) #sends back the template or error message
